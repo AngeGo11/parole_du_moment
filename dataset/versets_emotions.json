@@ -1,0 +1,122 @@
+[
+  {
+    "verset_id": "verset_001",
+    "emotion_id": "emotion_1",
+    "poids_ia": 0.95,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_001",
+    "emotion_id": "emotion_4",
+    "poids_ia": 0.87,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_002",
+    "emotion_id": "emotion_2",
+    "poids_ia": 0.92,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_002",
+    "emotion_id": "emotion_5",
+    "poids_ia": 0.78,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_003",
+    "emotion_id": "emotion_3",
+    "poids_ia": 0.89,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_003",
+    "emotion_id": "emotion_6",
+    "poids_ia": 0.83,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_004",
+    "emotion_id": "emotion_7",
+    "poids_ia": 0.91,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_004",
+    "emotion_id": "emotion_8",
+    "poids_ia": 0.76,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_005",
+    "emotion_id": "emotion_9",
+    "poids_ia": 0.88,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_005",
+    "emotion_id": "emotion_10",
+    "poids_ia": 0.82,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_006",
+    "emotion_id": "emotion_11",
+    "poids_ia": 0.94,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_006",
+    "emotion_id": "emotion_12",
+    "poids_ia": 0.79,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_007",
+    "emotion_id": "emotion_13",
+    "poids_ia": 0.86,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_007",
+    "emotion_id": "emotion_14",
+    "poids_ia": 0.81,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_008",
+    "emotion_id": "emotion_15",
+    "poids_ia": 0.90,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_008",
+    "emotion_id": "emotion_16",
+    "poids_ia": 0.75,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_009",
+    "emotion_id": "emotion_17",
+    "poids_ia": 0.93,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_009",
+    "emotion_id": "emotion_18",
+    "poids_ia": 0.77,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_010",
+    "emotion_id": "emotion_19",
+    "poids_ia": 0.85,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_010",
+    "emotion_id": "emotion_20",
+    "poids_ia": 0.80,
+    "created_at": "2024-01-01T00:00:00Z"
+  }
+]

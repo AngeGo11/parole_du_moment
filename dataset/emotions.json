@@ -1,0 +1,122 @@
+[
+  {
+    "nom": "Joie",
+    "description": "Sentiment de bonheur et d'allégresse",
+    "icone": "😊",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Paix",
+    "description": "État de tranquillité et de sérénité",
+    "icone": "🕊️",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Espérance",
+    "description": "Confiance en l'avenir et attente positive",
+    "icone": "🌟",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Amour",
+    "description": "Affection profonde et dévouement",
+    "icone": "❤️",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Foi",
+    "description": "Confiance absolue en Dieu",
+    "icone": "🙏",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Gratitude",
+    "description": "Reconnaissance et appréciation",
+    "icone": "🙏",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Humilité",
+    "description": "Modestie et absence d'orgueil",
+    "icone": "🤲",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Patience",
+    "description": "Capacité à supporter les difficultés",
+    "icone": "⏳",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Courage",
+    "description": "Force morale face au danger",
+    "icone": "💪",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Compassion",
+    "description": "Sympathie et pitié pour la souffrance d'autrui",
+    "icone": "🤗",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Pardon",
+    "description": "Acte de grâce et de miséricorde",
+    "icone": "🤝",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Réconfort",
+    "description": "Soutien moral et consolation",
+    "icone": "🤗",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Sagesse",
+    "description": "Connaissance profonde et discernement",
+    "icone": "🧠",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Force",
+    "description": "Puissance morale et physique",
+    "icone": "💪",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Persévérance",
+    "description": "Constance dans l'effort et la détermination",
+    "icone": "🎯",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Tristesse",
+    "description": "État de mélancolie et de chagrin",
+    "icone": "😢",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Peur",
+    "description": "Sentiment d'inquiétude et d'appréhension",
+    "icone": "😰",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Anxiété",
+    "description": "Inquiétude excessive et trouble",
+    "icone": "😟",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Colère",
+    "description": "Sentiment violent d'irritation",
+    "icone": "😠",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Désespoir",
+    "description": "Perte totale d'espoir",
+    "icone": "😞",
+    "created_at": "2024-01-01T00:00:00Z"
+  }
+]

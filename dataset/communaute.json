@@ -1,0 +1,72 @@
+[
+  {
+    "nom": "Église de la Grâce",
+    "est_privee": false,
+    "description": "Communauté chrétienne ouverte à tous",
+    "date_creation": "2024-01-01T00:00:00Z",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Groupe de Prière du Matin",
+    "est_privee": false,
+    "description": "Groupe de prière quotidienne à 6h",
+    "date_creation": "2024-01-02T00:00:00Z",
+    "created_at": "2024-01-02T00:00:00Z"
+  },
+  {
+    "nom": "Étude Biblique des Jeunes",
+    "est_privee": true,
+    "description": "Groupe d'étude biblique pour les 18-35 ans",
+    "date_creation": "2024-01-03T00:00:00Z",
+    "created_at": "2024-01-03T00:00:00Z"
+  },
+  {
+    "nom": "Familles Chrétiennes",
+    "est_privee": false,
+    "description": "Communauté pour les familles avec enfants",
+    "date_creation": "2024-01-04T00:00:00Z",
+    "created_at": "2024-01-04T00:00:00Z"
+  },
+  {
+    "nom": "Ministère de la Musique",
+    "est_privee": true,
+    "description": "Groupe pour les musiciens et chanteurs",
+    "date_creation": "2024-01-05T00:00:00Z",
+    "created_at": "2024-01-05T00:00:00Z"
+  },
+  {
+    "nom": "Évangélisation Urbaine",
+    "est_privee": false,
+    "description": "Groupe d'évangélisation dans la ville",
+    "date_creation": "2024-01-06T00:00:00Z",
+    "created_at": "2024-01-06T00:00:00Z"
+  },
+  {
+    "nom": "Soutien aux Personnes Âgées",
+    "est_privee": false,
+    "description": "Ministère d'aide aux personnes âgées",
+    "date_creation": "2024-01-07T00:00:00Z",
+    "created_at": "2024-01-07T00:00:00Z"
+  },
+  {
+    "nom": "Étude des Prophéties",
+    "est_privee": true,
+    "description": "Groupe d'étude des prophéties bibliques",
+    "date_creation": "2024-01-08T00:00:00Z",
+    "created_at": "2024-01-08T00:00:00Z"
+  },
+  {
+    "nom": "Prière et Jeûne",
+    "est_privee": false,
+    "description": "Communauté de prière et de jeûne",
+    "date_creation": "2024-01-09T00:00:00Z",
+    "created_at": "2024-01-09T00:00:00Z"
+  },
+  {
+    "nom": "Mission Internationale",
+    "est_privee": true,
+    "description": "Groupe de missionnaires et supporters",
+    "date_creation": "2024-01-10T00:00:00Z",
+    "created_at": "2024-01-10T00:00:00Z"
+  }
+]

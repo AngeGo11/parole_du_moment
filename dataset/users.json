@@ -1,0 +1,86 @@
+[
+  {
+    "email": "admin@paroledumoment.com",
+    "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J8K8K8K8K",
+    "nom": "Administrateur",
+    "prenom": "Admin",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "email": "pasteur@eglise.com",
+    "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J8K8K8K8K",
+    "nom": "Martin",
+    "prenom": "Jean",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "email": "membre1@eglise.com",
+    "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J8K8K8K8K",
+    "nom": "Dubois",
+    "prenom": "Marie",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "email": "membre2@eglise.com",
+    "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J8K8K8K8K",
+    "nom": "Bernard",
+    "prenom": "Pierre",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "email": "membre3@eglise.com",
+    "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J8K8K8K8K",
+    "nom": "Moreau",
+    "prenom": "Sophie",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "email": "membre4@eglise.com",
+    "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J8K8K8K8K",
+    "nom": "Petit",
+    "prenom": "Luc",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "email": "membre5@eglise.com",
+    "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J8K8K8K8K",
+    "nom": "Robert",
+    "prenom": "Claire",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "email": "membre6@eglise.com",
+    "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J8K8K8K8K",
+    "nom": "Richard",
+    "prenom": "Antoine",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "email": "membre7@eglise.com",
+    "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J8K8K8K8K",
+    "nom": "Durand",
+    "prenom": "Isabelle",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "email": "membre8@eglise.com",
+    "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J8K8K8K8K",
+    "nom": "Leroy",
+    "prenom": "Thomas",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "email": "membre9@eglise.com",
+    "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J8K8K8K8K",
+    "nom": "Moreau",
+    "prenom": "Nathalie",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "email": "membre10@eglise.com",
+    "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J8K8K8K8K",
+    "nom": "Simon",
+    "prenom": "David",
+    "created_at": "2024-01-01T00:00:00Z"
+  }
+]

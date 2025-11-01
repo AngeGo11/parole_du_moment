@@ -1,0 +1,103 @@
+-- TABLE DES TRADUCTIONS (VERSION)
+CREATE TABLE traductions (
+    id SERIAL PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL UNIQUE,
+    abreviation VARCHAR(10) NOT NULL UNIQUE,
+    description TEXT
+    -- Note: J'ai ajouté 'description' pour inclure votre champ 'desc'
+);
+
+-- TABLE DES TESTAMENTS
+CREATE TABLE testaments (
+    id SERIAL PRIMARY KEY,
+    nom VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- TABLE DES LIVRES
+CREATE TABLE livres (
+    id SERIAL PRIMARY KEY,
+    testament_id INTEGER NOT NULL REFERENCES testaments(id),
+    nom VARCHAR(100) NOT NULL,
+    abreviation VARCHAR(20) NOT NULL,
+    ordre INTEGER NOT NULL
+);
+
+-- TABLE DES textes (TEXTE)
+CREATE TABLE textes (
+    id BIGSERIAL PRIMARY KEY,
+    traduction_id INTEGER NOT NULL REFERENCES traductions(id),
+    livre_id INTEGER NOT NULL REFERENCES livres(id),
+    chapitre SMALLINT NOT NULL,
+    numero SMALLINT NOT NULL,
+    contenu TEXT NOT NULL,
+    ref_unique VARCHAR(50) UNIQUE, -- Ex: Ge.1.1.LSG
+    UNIQUE (traduction_id, livre_id, chapitre, numero)
+);
+-- Index pour la recherche full-text
+CREATE INDEX idx_versets_contenu ON versets USING GIN (to_tsvector('french', contenu));
+
+
+-- TABLE DES THÈMES
+CREATE TABLE themes (
+    id SERIAL PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- TABLE DES ÉMOTIONS
+CREATE TABLE emotions (
+    id SERIAL PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- TABLE DE LIAISON VERSET - THÈME
+CREATE TABLE versets_themes (
+    verset_id BIGINT REFERENCES versets(id),
+    theme_id INTEGER REFERENCES themes(id),
+    poids_ia NUMERIC(3,2),
+    PRIMARY KEY (verset_id, theme_id)
+);
+
+-- TABLE DE LIAISON VERSET - ÉMOTION
+CREATE TABLE versets_emotions (
+    verset_id BIGINT REFERENCES versets(id),
+    emotion_id INTEGER REFERENCES emotions(id),
+    poids_ia NUMERIC(3,2),
+    PRIMARY KEY (verset_id, emotion_id)
+);
+
+-- TABLE DES UTILISATEURS (Ajoutée pour les clés étrangères)
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    password_hash VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+
+);
+
+-- TABLE DES COMMUNAUTÉS
+CREATE TABLE communautes (
+    id SERIAL PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL UNIQUE,
+    est_privee BOOLEAN NOT NULL DEFAULT FALSE,
+    date_creation TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- TABLE DE LIAISON MEMBRES_COMMUNAUTE (remplace 'membre_Communaute')
+CREATE TABLE membres_communaute (
+    utilisateur_id INTEGER NOT NULL REFERENCES utilisateurs(id),
+    communaute_id INTEGER NOT NULL REFERENCES communautes(id),
+    role enum('admin', 'membre simple') NOT NULL,
+    date_adhesion TIMESTAMP WITH TIME ZONE DEFAULT NOW()    PRIMARY KEY (utilisateur_id, communaute_id)
+);
+
+-- TABLE DES MESSAGES DANS LES COMMUNAUTÉS
+CREATE TABLE messages (
+    id BIGSERIAL PRIMARY KEY,
+    communaute_id INTEGER NOT NULL REFERENCES communautes(id),
+    auteur_id INTEGER NOT NULL REFERENCES utilisateurs(id),
+    contenu TEXT NOT NULL,
+    verset_cite_id BIGINT REFERENCES versets(id), -- Optionnel: si un verset est cité
+    date_envoi TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);

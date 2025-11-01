@@ -1,0 +1,182 @@
+[
+  {
+    "nom": "Salut",
+    "description": "Thème central du salut et de la rédemption",
+    "couleur": "#FF6B6B",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Amour de Dieu",
+    "description": "L'amour inconditionnel de Dieu pour l'humanité",
+    "couleur": "#FF8E8E",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Grâce",
+    "description": "La grâce divine et le pardon",
+    "couleur": "#FFB3B3",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Foi",
+    "description": "La confiance et la croyance en Dieu",
+    "couleur": "#4ECDC4",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Espérance",
+    "description": "L'espérance chrétienne et la promesse",
+    "couleur": "#45B7D1",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Paix",
+    "description": "La paix de Dieu et la réconciliation",
+    "couleur": "#96CEB4",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Joie",
+    "description": "La joie du Seigneur et la réjouissance",
+    "couleur": "#FFEAA7",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Sagesse",
+    "description": "La sagesse divine et la connaissance",
+    "couleur": "#DDA0DD",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Justice",
+    "description": "La justice de Dieu et l'équité",
+    "couleur": "#98D8C8",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Miséricorde",
+    "description": "La miséricorde divine et la compassion",
+    "couleur": "#F7DC6F",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Pardon",
+    "description": "Le pardon divin et la réconciliation",
+    "couleur": "#BB8FCE",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Rédemption",
+    "description": "La rédemption par le sacrifice de Christ",
+    "couleur": "#85C1E9",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Résurrection",
+    "description": "La résurrection et la vie éternelle",
+    "couleur": "#F8C471",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Royaume de Dieu",
+    "description": "Le royaume de Dieu et sa venue",
+    "couleur": "#82E0AA",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Création",
+    "description": "La création divine et la nature",
+    "couleur": "#A9DFBF",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Alliance",
+    "description": "L'alliance entre Dieu et son peuple",
+    "couleur": "#AED6F1",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Prophétie",
+    "description": "Les prophéties et leur accomplissement",
+    "couleur": "#D5DBDB",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Adoration",
+    "description": "L'adoration et la louange",
+    "couleur": "#FADBD8",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Prière",
+    "description": "La prière et la communion avec Dieu",
+    "couleur": "#D1F2EB",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Service",
+    "description": "Le service et le ministère",
+    "couleur": "#FCF3CF",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Communauté",
+    "description": "La communauté chrétienne et l'Église",
+    "couleur": "#E8DAEF",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Discipleship",
+    "description": "Le discipleship et la formation",
+    "couleur": "#D5A6BD",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Mission",
+    "description": "La mission et l'évangélisation",
+    "couleur": "#A3E4D7",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Persévérance",
+    "description": "La persévérance et l'endurance",
+    "couleur": "#F9E79F",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Humilité",
+    "description": "L'humilité et la modestie",
+    "couleur": "#D7DBDD",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Obéissance",
+    "description": "L'obéissance à Dieu et à sa volonté",
+    "couleur": "#EBDEF0",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Repentance",
+    "description": "La repentance et le changement de cœur",
+    "couleur": "#FAD7A0",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Sanctification",
+    "description": "La sanctification et la croissance spirituelle",
+    "couleur": "#D5F4E6",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Épreuves",
+    "description": "Les épreuves et la souffrance",
+    "couleur": "#F8D7DA",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Victoire",
+    "description": "La victoire en Christ et le triomphe",
+    "couleur": "#D4EDDA",
+    "created_at": "2024-01-01T00:00:00Z"
+  }
+]

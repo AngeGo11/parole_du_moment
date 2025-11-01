@@ -1,0 +1,107 @@
+[
+  {
+    "nom": "La Bible de l'Épée",
+    "abreviation": "LSG",
+    "description": "Version française classique",
+    "langue": "fr",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "King James Version",
+    "abreviation": "KJV",
+    "description": "Version anglaise classique",
+    "langue": "en",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Basic English Bible",
+    "abreviation": "BBE",
+    "description": "Version anglaise simplifiée",
+    "langue": "en",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Reina Valera",
+    "abreviation": "RVR",
+    "description": "Version espagnole",
+    "langue": "es",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Schlachter",
+    "abreviation": "SCH",
+    "description": "Version allemande",
+    "langue": "de",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Nova Versão Internacional",
+    "abreviation": "NVI",
+    "description": "Version portugaise moderne",
+    "langue": "pt",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Синодальный перевод",
+    "abreviation": "SYN",
+    "description": "Version russe",
+    "langue": "ru",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Chinese Union Version",
+    "abreviation": "CUV",
+    "description": "Version chinoise",
+    "langue": "zh",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Arabic Bible",
+    "abreviation": "SVD",
+    "description": "Version arabe",
+    "langue": "ar",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Korean Bible",
+    "abreviation": "KO",
+    "description": "Version coréenne",
+    "langue": "ko",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Vietnamese Bible",
+    "abreviation": "VI",
+    "description": "Version vietnamienne",
+    "langue": "vi",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Finnish Bible",
+    "abreviation": "FI",
+    "description": "Version finlandaise",
+    "langue": "fi",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Cornilescu",
+    "abreviation": "RO",
+    "description": "Version roumaine",
+    "langue": "ro",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Greek Bible",
+    "abreviation": "GR",
+    "description": "Version grecque",
+    "langue": "el",
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "nom": "Esperanto Bible",
+    "abreviation": "EO",
+    "description": "Version espéranto",
+    "langue": "eo",
+    "created_at": "2024-01-01T00:00:00Z"
+  }
+]

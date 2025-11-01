@@ -1,0 +1,162 @@
+[
+  {
+    "communaute_id": "communaute_1",
+    "auteur_id": "user_2",
+    "contenu": "Bonjour frères et sœurs ! Que cette journée soit bénie par le Seigneur. 🌟",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T08:00:00Z",
+    "created_at": "2024-01-15T08:00:00Z"
+  },
+  {
+    "communaute_id": "communaute_1",
+    "auteur_id": "user_3",
+    "contenu": "Merci pour ce beau message ! Le verset du jour m'a vraiment touché le cœur.",
+    "verset_cite_id": "verset_123",
+    "date_envoi": "2024-01-15T08:15:00Z",
+    "created_at": "2024-01-15T08:15:00Z"
+  },
+  {
+    "communaute_id": "communaute_2",
+    "auteur_id": "user_2",
+    "contenu": "Rendez-vous à 6h pour notre moment de prière ensemble ! 🙏",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T05:30:00Z",
+    "created_at": "2024-01-15T05:30:00Z"
+  },
+  {
+    "communaute_id": "communaute_2",
+    "auteur_id": "user_5",
+    "contenu": "Je serai là ! Prions pour nos familles et notre communauté.",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T05:45:00Z",
+    "created_at": "2024-01-15T05:45:00Z"
+  },
+  {
+    "communaute_id": "communaute_3",
+    "auteur_id": "user_7",
+    "contenu": "Salut les jeunes ! Qui veut étudier Romains 8 avec moi cette semaine ?",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T19:00:00Z",
+    "created_at": "2024-01-15T19:00:00Z"
+  },
+  {
+    "communaute_id": "communaute_3",
+    "auteur_id": "user_8",
+    "contenu": "Moi ! J'adore ce chapitre sur la vie dans l'Esprit.",
+    "verset_cite_id": "verset_456",
+    "date_envoi": "2024-01-15T19:10:00Z",
+    "created_at": "2024-01-15T19:10:00Z"
+  },
+  {
+    "communaute_id": "communaute_4",
+    "auteur_id": "user_3",
+    "contenu": "Chers parents, n'oubliez pas notre pique-nique familial dimanche !",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T14:00:00Z",
+    "created_at": "2024-01-15T14:00:00Z"
+  },
+  {
+    "communaute_id": "communaute_4",
+    "auteur_id": "user_4",
+    "contenu": "Parfait ! Les enfants sont très excités. Merci pour l'organisation !",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T14:15:00Z",
+    "created_at": "2024-01-15T14:15:00Z"
+  },
+  {
+    "communaute_id": "communaute_5",
+    "auteur_id": "user_6",
+    "contenu": "Répétition de chant dimanche à 15h. Venez avec vos instruments ! 🎵",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T16:00:00Z",
+    "created_at": "2024-01-15T16:00:00Z"
+  },
+  {
+    "communaute_id": "communaute_5",
+    "auteur_id": "user_7",
+    "contenu": "Je serai là avec ma guitare ! Quel répertoire allons-nous préparer ?",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T16:10:00Z",
+    "created_at": "2024-01-15T16:10:00Z"
+  },
+  {
+    "communaute_id": "communaute_6",
+    "auteur_id": "user_2",
+    "contenu": "Mission d'évangélisation samedi dans le centre-ville. Qui nous rejoint ?",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T10:00:00Z",
+    "created_at": "2024-01-15T10:00:00Z"
+  },
+  {
+    "communaute_id": "communaute_6",
+    "auteur_id": "user_9",
+    "contenu": "Moi ! J'ai préparé quelques tracts à distribuer.",
+    "verset_cite_id": "verset_789",
+    "date_envoi": "2024-01-15T10:15:00Z",
+    "created_at": "2024-01-15T10:15:00Z"
+  },
+  {
+    "communaute_id": "communaute_7",
+    "auteur_id": "user_3",
+    "contenu": "Visite aux personnes âgées mercredi. Apportez des fleurs ! 🌸",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T11:00:00Z",
+    "created_at": "2024-01-15T11:00:00Z"
+  },
+  {
+    "communaute_id": "communaute_7",
+    "auteur_id": "user_4",
+    "contenu": "Excellente initiative ! Nos aînés ont tant à nous apprendre.",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T11:20:00Z",
+    "created_at": "2024-01-15T11:20:00Z"
+  },
+  {
+    "communaute_id": "communaute_8",
+    "auteur_id": "user_5",
+    "contenu": "Étude des prophéties de Daniel ce soir à 20h. Venez nombreux !",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T18:00:00Z",
+    "created_at": "2024-01-15T18:00:00Z"
+  },
+  {
+    "communaute_id": "communaute_8",
+    "auteur_id": "user_6",
+    "contenu": "Passionnant ! Les prophéties nous donnent tant d'espérance.",
+    "verset_cite_id": "verset_321",
+    "date_envoi": "2024-01-15T18:15:00Z",
+    "created_at": "2024-01-15T18:15:00Z"
+  },
+  {
+    "communaute_id": "communaute_9",
+    "auteur_id": "user_7",
+    "contenu": "Temps de jeûne et prière jeudi. Unissons-nous dans la prière !",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T12:00:00Z",
+    "created_at": "2024-01-15T12:00:00Z"
+  },
+  {
+    "communaute_id": "communaute_9",
+    "auteur_id": "user_8",
+    "contenu": "Amen ! Prions pour notre nation et nos dirigeants.",
+    "verset_cite_id": "verset_654",
+    "date_envoi": "2024-01-15T12:10:00Z",
+    "created_at": "2024-01-15T12:10:00Z"
+  },
+  {
+    "communaute_id": "communaute_10",
+    "auteur_id": "user_2",
+    "contenu": "Nouvelles de nos missionnaires au Sénégal ! Dieu fait des merveilles !",
+    "verset_cite_id": null,
+    "date_envoi": "2024-01-15T15:00:00Z",
+    "created_at": "2024-01-15T15:00:00Z"
+  },
+  {
+    "communaute_id": "communaute_10",
+    "auteur_id": "user_9",
+    "contenu": "Gloire à Dieu ! Continuons à les soutenir par nos prières.",
+    "verset_cite_id": "verset_987",
+    "date_envoi": "2024-01-15T15:20:00Z",
+    "created_at": "2024-01-15T15:20:00Z"
+  }
+]

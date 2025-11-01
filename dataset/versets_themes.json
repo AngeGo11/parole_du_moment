@@ -1,0 +1,122 @@
+[
+  {
+    "verset_id": "verset_001",
+    "theme_id": "theme_1",
+    "poids_ia": 0.95,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_001",
+    "theme_id": "theme_2",
+    "poids_ia": 0.87,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_002",
+    "theme_id": "theme_3",
+    "poids_ia": 0.92,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_002",
+    "theme_id": "theme_4",
+    "poids_ia": 0.78,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_003",
+    "theme_id": "theme_5",
+    "poids_ia": 0.89,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_003",
+    "theme_id": "theme_6",
+    "poids_ia": 0.83,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_004",
+    "theme_id": "theme_7",
+    "poids_ia": 0.91,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_004",
+    "theme_id": "theme_8",
+    "poids_ia": 0.76,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_005",
+    "theme_id": "theme_9",
+    "poids_ia": 0.88,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_005",
+    "theme_id": "theme_10",
+    "poids_ia": 0.82,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_006",
+    "theme_id": "theme_11",
+    "poids_ia": 0.94,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_006",
+    "theme_id": "theme_12",
+    "poids_ia": 0.79,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_007",
+    "theme_id": "theme_13",
+    "poids_ia": 0.86,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_007",
+    "theme_id": "theme_14",
+    "poids_ia": 0.81,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_008",
+    "theme_id": "theme_15",
+    "poids_ia": 0.90,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_008",
+    "theme_id": "theme_16",
+    "poids_ia": 0.75,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_009",
+    "theme_id": "theme_17",
+    "poids_ia": 0.93,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_009",
+    "theme_id": "theme_18",
+    "poids_ia": 0.77,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_010",
+    "theme_id": "theme_19",
+    "poids_ia": 0.85,
+    "created_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "verset_id": "verset_010",
+    "theme_id": "theme_20",
+    "poids_ia": 0.80,
+    "created_at": "2024-01-01T00:00:00Z"
+  }
+]
