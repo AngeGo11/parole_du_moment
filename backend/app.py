@@ -10,6 +10,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from Home import router as home_router
+from Profile import router as profile_router
+from Assistant import router as assistant_router
+
 load_dotenv()
 
 
@@ -39,6 +42,8 @@ async def health_check() -> dict[str, str]:
 
 
 app.include_router(home_router)
+app.include_router(profile_router)
+app.include_router(assistant_router)
 
 
 @app.get("/", tags=["root"])
