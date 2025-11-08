@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+import 'package:firebase_auth/firebase_auth.dart';
 
-import '../config/api_config.dart';
+import '../services/api_service.dart';
 
+/// Modèle Verse compatible avec l'API et l'UI existante
 class Verse {
   final String text;
   final String reference;
@@ -23,6 +23,18 @@ class Verse {
     this.prayer,
     required this.keywords,
   });
+
+  /// Convertit VerseResponse de l'API en Verse pour l'UI
+  factory Verse.fromApiResponse(VerseResponse response) {
+    return Verse(
+      text: response.text,
+      reference: response.reference,
+      explanation: response.explanation,
+      meditation: response.meditation,
+      prayer: response.prayer,
+      keywords: response.keywords,
+    );
+  }
 }
 
 class HomePage extends StatefulWidget {
@@ -52,67 +64,7 @@ class _HomePageState extends State<HomePage>
     "J'ai besoin de paix",
   ];
 
-  final List<Verse> _verses = [
-    Verse(
-      text:
-          "L'Éternel est près de ceux qui ont le cœur brisé, Et il sauve ceux qui ont l'esprit dans l'abattement.",
-      reference: "Psaume 34:19",
-      explanation:
-          "Ce verset nous rappelle que dans nos moments de solitude et de tristesse, Dieu est particulièrement proche. Il n'est pas distant face à notre douleur, mais il s'en approche avec compassion.",
-      meditation:
-          "Prenez un moment pour réaliser que vous n'êtes jamais vraiment seul. La présence de Dieu est constante, même quand vous ne la ressentez pas. Il connaît chaque larme et chaque soupir.",
-      prayer:
-          "Seigneur, dans ma solitude, aide-moi à sentir Ta présence. Console mon cœur brisé et restaure mon esprit. Merci d'être toujours là pour moi.",
-      keywords: ['seul', 'solitude', 'triste', 'tristesse', 'isolé'],
-    ),
-    Verse(
-      text:
-          "Venez à moi, vous tous qui êtes fatigués et chargés, et je vous donnerai du repos.",
-      reference: "Matthieu 11:28",
-      explanation:
-          "Jésus nous invite à venir à lui avec nos fardeaux. Il ne nous juge pas pour notre fatigue, mais nous offre un lieu de repos et de réconfort.",
-      meditation:
-          "La fatigue que vous ressentez est réelle et valide. Jésus vous invite à déposer vos fardeaux à ses pieds. Vous n'avez pas à tout porter seul.",
-      prayer:
-          "Jésus, je suis fatigué et je porte tant de choses. Je viens à Toi pour trouver le repos dont mon âme a besoin. Prends mes fardeaux et renouvelle mes forces.",
-      keywords: ['fatigué', 'fatigue', 'épuisé', 'lourd', 'fardeau'],
-    ),
-    Verse(
-      text:
-          "Ne crains rien, car je suis avec toi; Ne promène pas des regards inquiets, car je suis ton Dieu; Je te fortifie, je viens à ton secours.",
-      reference: "Ésaïe 41:10",
-      explanation:
-          "Dieu nous assure de Sa présence constante et nous encourage à ne pas avoir peur. Il promet non seulement d'être avec nous, mais aussi de nous fortifier activement.",
-      meditation:
-          "L'avenir peut sembler incertain et effrayant. Mais rappelez-vous que Dieu marche déjà dans votre futur, préparant le chemin et vous fortifiant pour chaque étape.",
-      prayer:
-          "Père céleste, quand l'avenir m'effraie, rappelle-moi que Tu es déjà là-bas. Fortifie-moi et aide-moi à marcher avec confiance, sachant que Tu me soutiens.",
-      keywords: ['peur', 'avenir', 'inquiet', 'anxieux', 'crainte', 'futur'],
-    ),
-    Verse(
-      text: "Je puis tout par celui qui me fortifie.",
-      reference: "Philippiens 4:13",
-      explanation:
-          "Ce verset nous rappelle que notre force ne vient pas de nous-mêmes, mais de Christ qui vit en nous. Avec Lui, nous pouvons surmonter tous les obstacles.",
-      meditation:
-          "Vos doutes sont normaux, mais ils ne définissent pas votre capacité. En Christ, vous avez accès à une force qui dépasse vos propres limites.",
-      prayer:
-          "Seigneur, dans mes moments de doute, rappelle-moi que ma force vient de Toi. Aide-moi à avoir confiance en Ta puissance qui agit en moi.",
-      keywords: ['doute', 'confiance', 'capacité', 'force', 'capable'],
-    ),
-    Verse(
-      text:
-          "Je vous laisse la paix, je vous donne ma paix. Je ne vous donne pas comme le monde donne. Que votre cœur ne se trouble point, et ne s'alarme point.",
-      reference: "Jean 14:27",
-      explanation:
-          "Jésus offre une paix qui est différente de celle du monde. Cette paix n'est pas l'absence de problèmes, mais la présence de Dieu au milieu des tempêtes.",
-      meditation:
-          "La paix de Christ n'est pas conditionnée par vos circonstances. Elle est un don permanent qui peut remplir votre cœur même dans les situations les plus difficiles.",
-      prayer:
-          "Seigneur Jésus, remplis mon cœur de Ta paix qui surpasse toute intelligence. Que cette paix garde mon esprit et calme mes inquiétudes.",
-      keywords: ['paix', 'calme', 'tranquillité', 'sérénité', 'repos'],
-    ),
-  ];
+  final ApiService _apiService = ApiService.instance;
 
   @override
   void initState() {
@@ -130,36 +82,117 @@ class _HomePageState extends State<HomePage>
     super.dispose();
   }
 
-  Verse _findMatchingVerse(String text) {
-    final lowerText = text.toLowerCase();
-
-    for (final verse in _verses) {
-      if (verse.keywords.any((keyword) => lowerText.contains(keyword))) {
-        return verse;
-      }
-    }
-
-    // Verset par défaut
-    return _verses[4]; // Paix
-  }
-
   Future<void> _searchVerse(String text) async {
+    if (text.trim().isEmpty) return;
+
     setState(() {
       _isLoading = true;
       _isFavorite = false;
     });
 
-    // Simuler un délai pour l'analyse AI
-    await Future.delayed(const Duration(milliseconds: 1500));
+    try {
+      // Obtenir l'ID utilisateur Firebase si disponible
+      final userId = FirebaseAuth.instance.currentUser?.uid;
 
-    final verse = _findMatchingVerse(text);
-    setState(() {
-      _currentVerse = verse;
-      _isLoading = false;
-    });
+      // Créer la requête pour l'API
+      final request = VerseRequest(
+        text: text.trim(),
+        userId: userId,
+        language: 'fr',
+        includeAnalysis: true,
+      );
 
-    widget.onAddToHistory(verse, false);
-    _inputController.clear();
+      // Appeler l'API
+      final response = await _apiService.searchVerse(request);
+
+      // Convertir la réponse en Verse pour l'UI
+      final verse = Verse.fromApiResponse(response);
+
+      if (mounted) {
+        setState(() {
+          _currentVerse = verse;
+          _isLoading = false;
+        });
+
+        widget.onAddToHistory(verse, false);
+        _inputController.clear();
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        // Si le message est long (erreur de connexion), utiliser une dialog
+        if (e.message.contains('\n') || e.message.length > 100) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text(
+                'Erreur de connexion',
+                style: TextStyle(color: Color(0xFF5D4037)),
+              ),
+              content: SingleChildScrollView(
+                child: Text(e.message, style: const TextStyle(fontSize: 14)),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(color: Color(0xFF8D6E63)),
+                  ),
+                ),
+              ],
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.message),
+              backgroundColor: Colors.red.shade700,
+              duration: const Duration(seconds: 5),
+              action: SnackBarAction(
+                label: 'OK',
+                textColor: Colors.white,
+                onPressed: () {},
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        // Message d'erreur plus convivial selon le type d'erreur
+        String errorMessage;
+        if (e.toString().contains('TimeoutException') ||
+            e.toString().contains('timeout') ||
+            e.toString().contains('temps')) {
+          errorMessage =
+              'La recherche prend plus de temps que prévu. '
+              'Veuillez réessayer dans quelques instants.';
+        } else {
+          errorMessage = 'Erreur lors de la recherche: ${e.toString()}';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red.shade700,
+            duration: const Duration(seconds: 5),
+            action: SnackBarAction(
+              label: 'OK',
+              textColor: Colors.white,
+              onPressed: () {},
+            ),
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _handleSubmit() async {
@@ -318,45 +351,50 @@ class _HomePageState extends State<HomePage>
                     Positioned(
                       bottom: 24,
                       right: 24,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF8D6E63), Color(0xFF6D4C41)],
-                          ),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
+                      child: ValueListenableBuilder<TextEditingValue>(
+                        valueListenable: _inputController,
+                        builder: (context, value, child) {
+                          final isEmpty = value.text.trim().isEmpty;
+                          return Container(
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF8D6E63), Color(0xFF6D4C41)],
+                              ),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: IconButton(
-                          onPressed:
-                              _inputController.text.trim().isEmpty || _isLoading
-                              ? null
-                              : _handleSubmit,
-                          icon: _isLoading
-                              ? AnimatedBuilder(
-                                  animation: _animationController,
-                                  builder: (context, child) {
-                                    return Transform.rotate(
-                                      angle:
-                                          _animationController.value *
-                                          2 *
-                                          3.14159,
-                                      child: const Icon(
-                                        Icons.auto_awesome,
-                                        color: Colors.white,
-                                      ),
-                                    );
-                                  },
-                                )
-                              : const Icon(Icons.send, color: Colors.white),
-                          padding: const EdgeInsets.all(12),
-                          constraints: const BoxConstraints(),
-                        ),
+                            child: IconButton(
+                              onPressed: isEmpty || _isLoading
+                                  ? null
+                                  : _handleSubmit,
+                              icon: _isLoading
+                                  ? AnimatedBuilder(
+                                      animation: _animationController,
+                                      builder: (context, child) {
+                                        return Transform.rotate(
+                                          angle:
+                                              _animationController.value *
+                                              2 *
+                                              3.14159,
+                                          child: const Icon(
+                                            Icons.auto_awesome,
+                                            color: Colors.white,
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : const Icon(Icons.send, color: Colors.white),
+                              padding: const EdgeInsets.all(12),
+                              constraints: const BoxConstraints(),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],

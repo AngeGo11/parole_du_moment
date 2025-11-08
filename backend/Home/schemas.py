@@ -43,6 +43,14 @@ class VerseRequest(BaseModel):
     text: str = Field(..., description="Message exprimant le ressenti de l'utilisateur")
     user_id: Optional[str] = Field(default=None, description="Identifiant utilisateur")
     language: str = Field(default="fr", description="Langue souhaitée pour la réponse")
+    translation_id: Optional[str] = Field(
+        default=None, 
+        description="ID de traduction biblique (ex: 'lsg', 'kjv'). Si non fourni, utilise bible_version ou la traduction par défaut selon la langue."
+    )
+    bible_version: Optional[str] = Field(
+        default=None,
+        description="Nom de la version biblique du profil (ex: 'Louis Segond 1910'). Utilisé si translation_id n'est pas fourni."
+    )
     include_analysis: bool = Field(
         default=True,
         description="Inclure ou non les détails d'analyse dans la réponse",

@@ -159,7 +159,7 @@ class _AssistantPageState extends State<AssistantPage>
         id: '1',
         role: 'assistant',
         content:
-            "Bonjour ! 🙏 Je suis votre assistant spirituel guidé par la Parole de Dieu. Je suis là pour vous accompagner dans votre marche spirituelle, répondre à vos questions et vous encourager avec les Écritures. Comment puis-je vous aider aujourd'hui ?",
+            "Bonjour ! 🙏 Je suis Shalom🌿, votre assistant spirituel guidé par la Parole de Dieu. Je suis là pour vous accompagner dans votre marche spirituelle, répondre à vos questions, méditer avec vous et vous encourager avec les Écritures. Comment puis-je vous aider aujourd'hui ?",
         timestamp: DateTime.now(),
       ),
     );

@@ -208,14 +208,17 @@ mongod --dbpath /path/to/your/data/directory
 # Importer les données bibliques dans MongoDB
 python backend/import_all_data.py
 
+# ⚠️ IMPORTANT : Pré-calculer les embeddings (une seule fois, obligatoire)
+python scripts/compute_embeddings.py --translation lsg
+
 # Lancer le serveur
-python app.py
+python -m uvicorn app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### 🔑 Obtenir vos Clés API
 
 1. **OpenAI API Key** :
-   - Créez un compte sur [platform.openai.com](https://platform.openai.com)
+   - Créez un compte sur [console.groq.com](https://console.groq.com)
    - Allez dans API Keys → Créez une nouvelle clé secrète
    - Copiez la clé dans votre fichier `.env`
 
@@ -269,9 +272,12 @@ sudo systemctl enable mongod
 Créez un fichier `.env` dans le dossier backend :
 
 ```env
-# OpenAI Configuration
-OPENAI_API_KEY=your_openai_api_key_here
-OPENAI_MODEL=gpt-4  # ou gpt-3.5-turbo pour des coûts réduits
+# Groq API Configuration
+GROQ_API_KEY=your_groq_api_key_here
+GROQ_MODEL_ANALYSIS=llama3-70b-8192  # Modèle pour l'analyse (par défaut: llama3-70b-8192)
+GROQ_MODEL_GENERATION=llama3-70b-8192  # Modèle pour la génération (par défaut: llama3-70b-8192)
+# Note: Obtenez votre clé API sur https://console.groq.com
+# Modèles disponibles: llama3-70b-8192, llama3-8b-8192, gemma-7b-it, gemma2-9b-it
 
 # LangChain Configuration
 LANGCHAIN_TRACING_V2=false  # Mettre à true pour activer le tracing LangSmith
@@ -292,6 +298,10 @@ API_BASE_URL=http://localhost:8000
 
 # Memory Configuration (LangChain)
 MEMORY_MAX_TOKEN_LIMIT=2000  # Limite de tokens pour la mémoire conversationnelle
+
+# Embeddings Configuration (Recherche Vectorielle)
+EMBEDDING_MODEL=paraphrase-multilingual-MiniLM-L12-v2  # Modèle d'embeddings (optionnel)
+# Alternatives: all-MiniLM-L6-v2 (plus rapide), all-mpnet-base-v2 (meilleure qualité)
 ```
 
 ### Configuration Flutter
@@ -320,6 +330,238 @@ class ApiConfig {
     - Dans Firebase Console → Authentication → Sign-in method
     - Activer "Email/Password" et/ou "Google" selon vos besoins
 
+## 🔍 Recherche Vectorielle avec Embeddings
+
+### 📋 Vue d'ensemble
+
+Le système utilise la **recherche vectorielle avec embeddings** pour trouver les versets les plus pertinents, peu importe les mots utilisés par l'utilisateur. Cette technologie permet une compréhension sémantique profonde plutôt qu'une simple correspondance de mots-clés.
+
+### 🎯 Pourquoi les Embeddings ?
+
+| **Méthode Traditionnelle** ❌ | **Recherche Vectorielle** ✅ |
+|-------------------------------|------------------------------|
+| Recherche par mots-clés exacts | Compréhension sémantique |
+| "je suis triste" ≠ "mon cœur est lourd" | "je suis triste" = "mon cœur est lourd" |
+| Dépend des collections de liaison | Fonctionne indépendamment |
+| Peut échouer si mot manquant | Trouve toujours des résultats pertinents |
+| Résultats parfois aléatoires | Résultats toujours pertinents |
+
+### 🚀 Installation et Configuration
+
+#### 1. Installer les dépendances
+
+Les dépendances nécessaires sont déjà dans `requirements.txt` :
+
+```bash
+cd backend
+pip install -r requirements.txt
+```
+
+Cela installera automatiquement :
+- `sentence-transformers` : Pour générer les embeddings
+- `numpy` : Pour les calculs vectoriels
+- `tqdm` : Pour les barres de progression
+
+#### 2. Pré-calculer les embeddings (une seule fois)
+
+**⚠️ IMPORTANT** : Cette étape est **obligatoire** avant d'utiliser l'application. Elle calcule et stocke les embeddings de tous les versets dans MongoDB.
+
+```bash
+# Pour toutes les traductions (peut prendre plusieurs minutes)
+python scripts/compute_embeddings.py
+
+# Pour une traduction spécifique (recommandé, plus rapide)
+python scripts/compute_embeddings.py --translation lsg
+```
+
+**Exemple de sortie** :
+```
+🔌 Connexion à MongoDB: mongodb://localhost:27017
+📚 Base de données: parole_du_moment_db
+✅ Service d'embeddings initialisé (dimension: 384)
+📖 Traitement uniquement de la traduction: lsg
+📊 Nombre total de versets à traiter: 31102
+Calcul des embeddings: 100%|████████████| 31102/31102 [05:23<00:00]
+✅ Traitement terminé!
+   Total traité: 31102
+   Mis à jour: 31102
+   Ignorés (déjà calculés ou erreurs): 0
+```
+
+#### 3. Configuration optionnelle
+
+Dans votre fichier `.env`, vous pouvez personnaliser le modèle d'embeddings :
+
+```env
+# Modèle d'embeddings (optionnel)
+EMBEDDING_MODEL=paraphrase-multilingual-MiniLM-L12-v2  # Par défaut
+# Alternatives:
+# - all-MiniLM-L6-v2 (plus rapide, moins bon pour le français)
+# - all-mpnet-base-v2 (meilleure qualité, plus lent)
+```
+
+### 🔧 Fonctionnement Technique
+
+#### Architecture de la Recherche
+
+```
+┌─────────────────────────────────────────────────────────┐
+│         Texte Utilisateur                               │
+│    "Je me sens seul et perdu"                           │
+└────────────────────┬────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────┐
+│      Génération Embedding (Temps Réel)                  │
+│  sentence-transformers → Vecteur [384 dimensions]       │
+└────────────────────┬────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────┐
+│      Comparaison avec Embeddings Pré-calculés           │
+│  Similarité Cosinus → TOP 20 versets                    │
+└────────────────────┬────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────┐
+│      Score Hybride                                      │
+│  70% Similarité Vectorielle                             │
+│  + 30% Correspondance Émotions/Thèmes                  │
+└────────────────────┬────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────┐
+│      Verset Sélectionné                                 │
+│  "Car je connais les projets que j'ai formés sur vous"  │
+│  Jérémie 29:11                                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+#### Étapes Détaillées
+
+1. **Analyse du Texte Utilisateur** (Groq API)
+   - Extrait émotions, thèmes et mots-clés
+   - Exemple : `emotions=['solitude'], themes=['présence de Dieu']`
+
+2. **Recherche Vectorielle** (Local, Gratuit)
+   - Génère un embedding du texte utilisateur
+   - Compare avec tous les embeddings pré-calculés des versets
+   - Trouve les TOP 20 versets les plus similaires sémantiquement
+
+3. **Score Hybride**
+   - **70%** : Score de similarité vectorielle (compréhension sémantique)
+   - **30%** : Score sémantique
+     - 60% : Correspondance avec émotions/thèmes détectés
+     - 40% : Correspondance avec mots-clés dans le contenu
+
+4. **Sélection du Meilleur Verset**
+   - Le verset avec le score combiné le plus élevé est sélectionné
+   - Passé au LLM pour générer l'explication, la méditation et la prière
+
+### 📊 Modèle d'Embeddings Utilisé
+
+**Modèle par défaut** : `paraphrase-multilingual-MiniLM-L12-v2`
+
+| Caractéristique | Valeur |
+|-----------------|--------|
+| **Dimension** | 384 |
+| **Langues** | Multilingue (excellent pour le français) |
+| **Vitesse** | Rapide (~100ms par verset) |
+| **Qualité** | Bon équilibre qualité/vitesse |
+| **Coût** | Gratuit (local) |
+
+### 🔄 Quand Recalculer les Embeddings ?
+
+#### ✅ Une seule fois suffit normalement
+
+Les embeddings sont calculés **une seule fois** et stockés dans MongoDB (champ `embedding` de chaque verset). Le script est intelligent et vérifie automatiquement si un embedding existe déjà.
+
+#### 🔁 Quand relancer le script ?
+
+1. **Ajout de nouveaux versets** : Si vous importez de nouveaux versets dans MongoDB
+2. **Changement de modèle** : Si vous changez `EMBEDDING_MODEL` dans `.env`
+3. **Suppression accidentelle** : Si les embeddings ont été supprimés par erreur
+
+#### 💡 Exemple d'utilisation
+
+```bash
+# Première fois : calcule TOUS les embeddings
+python scripts/compute_embeddings.py --translation lsg
+# Résultat : "Mis à jour: 31102, Ignorés: 0"
+
+# Deuxième fois : ne fait rien (déjà calculés)
+python scripts/compute_embeddings.py --translation lsg
+# Résultat : "Mis à jour: 0, Ignorés: 31102"
+
+# Si vous ajoutez 10 nouveaux versets, relancez :
+python scripts/compute_embeddings.py --translation lsg
+# Résultat : "Mis à jour: 10, Ignorés: 31102"
+```
+
+### ✨ Avantages de la Recherche Vectorielle
+
+1. **Compréhension Sémantique** 🧠
+   - Capture le sens, pas seulement les mots
+   - "je suis triste" = "mon cœur est lourd" = "je pleure" → même résultat
+
+2. **Flexibilité Linguistique** 🌍
+   - Fonctionne avec différentes formulations
+   - Comprend les synonymes et expressions variées
+
+3. **Robustesse** 🛡️
+   - Moins dépendant des collections de liaison (`versets_emotions`, `versets_themes`)
+   - Fonctionne même si l'extraction d'émotions/thèmes échoue
+
+4. **Performance** ⚡
+   - Rapide même avec des milliers de versets
+   - Gratuit (pas besoin d'API externe)
+   - Local (pas de dépendance réseau)
+
+5. **Pertinence** 🎯
+   - Résultats toujours pertinents, peu importe les mots utilisés
+   - Score hybride combine sémantique et métadonnées
+
+### 🐛 Dépannage
+
+#### Erreur : "Aucun verset avec embedding trouvé"
+
+**Solution** : Exécutez le script de pré-calcul :
+```bash
+python scripts/compute_embeddings.py --translation lsg
+```
+
+#### Erreur : "ModuleNotFoundError: No module named 'sentence_transformers'"
+
+**Solution** : Installez les dépendances :
+```bash
+pip install -r requirements.txt
+```
+
+#### Le script est lent
+
+**Normal** : Le calcul initial peut prendre plusieurs minutes pour des milliers de versets. C'est normal et ne se fait qu'une seule fois.
+
+#### Changer le modèle d'embeddings
+
+1. Modifiez `EMBEDDING_MODEL` dans `.env`
+2. Supprimez les embeddings existants (optionnel) :
+   ```javascript
+   // Dans MongoDB shell
+   db.versets.updateMany({}, {$unset: {embedding: ""}})
+   ```
+3. Relancez le script :
+   ```bash
+   python scripts/compute_embeddings.py --translation lsg
+   ```
+
+### 📝 Notes Importantes
+
+- ⚠️ **Les embeddings sont stockés dans MongoDB** : Chaque verset a un champ `embedding` (liste de 384 nombres)
+- ⚠️ **Le calcul initial peut prendre du temps** : Quelques minutes pour des milliers de versets
+- ✅ **Les embeddings sont réutilisés** : Calculés une seule fois, utilisés indéfiniment
+- ✅ **Le script est idempotent** : Relancer est sans risque, il ne recalcule que ce qui manque
+- ✅ **Fallback automatique** : Si les embeddings ne sont pas disponibles, le système utilise les méthodes traditionnelles
+
 ## 📚 Structure du Projet
 
 ```
@@ -336,6 +578,13 @@ parole_du_moment/
 │   └── widgets/            # Composants réutilisables
 ├── backend/                # Code source Python
 │   ├── app.py             # Point d'entrée FastAPI
+│   ├── Home/               # Module Home (recherche de versets)
+│   │   ├── chains.py      # Chaînes LangChain (analyse + génération)
+│   │   ├── retriever.py   # Recherche de versets (vectorielle + traditionnelle)
+│   │   ├── embeddings.py  # Service d'embeddings vectoriels
+│   │   └── schemas.py     # Modèles Pydantic
+│   ├── scripts/           # Scripts utilitaires
+│   │   └── compute_embeddings.py  # Pré-calcul des embeddings
 │   ├── models/            # Modèles MongoDB
 │   ├── services/          # Services métier
 │   │   ├── spiritual_ai.py # Intelligence Spirituelle (LangChain + OpenAI)
@@ -390,8 +639,9 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 ## 🙏 Remerciements
 
 - **Communauté Flutter** pour l'excellent framework
-- **OpenAI** pour l'API GPT-4 d'intelligence artificielle avancée
+- **Groq** pour l'API d'IA rapide et gratuite (llama-3.1-8b-instant)
 - **LangChain** pour l'orchestration et la gestion de la mémoire conversationnelle
+- **sentence-transformers** pour les embeddings vectoriels multilingues
 - **MongoDB** pour la base de données NoSQL flexible
 - **Firebase** pour l'authentification sécurisée
 - **Communauté chrétienne** pour l'inspiration spirituelle
@@ -408,3 +658,166 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
   <p>Fait avec ❤️ et 🙏 pour la gloire de Dieu</p>
   <p><em>"Ta parole est une lampe à mes pieds, et une lumière sur mon sentier." - Psaume 119:105</em></p>
 </div>
+
+
+## Diagramme de flux (Home)
+
+┌─────────────────────────────────────────────────────────────────┐
+│  ÉTAPE 1 : SAISIE UTILISATEUR (Frontend Flutter)              │
+│  ────────────────────────────────────────────────────────────  │
+│  L'utilisateur tape : "Je me sens seul et perdu"              │
+│  + Sélectionne langue: "fr"                                   │
+│  + Sélectionne traduction: "Louis Segond 1910"                │
+└────────────────────┬────────────────────────────────────────────┘
+                     │
+                     ▼ HTTP POST
+┌─────────────────────────────────────────────────────────────────┐
+│  ÉTAPE 2 : RÉCEPTION API (backend/Home/__init__.py)           │
+│  ────────────────────────────────────────────────────────────  │
+│  POST /api/home/search                                         │
+│  {                                                              │
+│    "text": "Je me sens seul et perdu",                        │
+│    "language": "fr",                                           │
+│    "translation_id": "lsg",                                    │
+│    "bible_version": "Louis Segond 1910"                        │
+│  }                                                              │
+└────────────────────┬────────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  ÉTAPE 3 : ANALYSE DU TEXTE (chains.py)                       │
+│  ────────────────────────────────────────────────────────────  │
+│  🔍 Analyse avec Groq (llama-3.1-8b-instant)                  │
+│                                                                 │
+│  Input: "Je me sens seul et perdu"                            │
+│  ↓                                                              │
+│  Prompt: "Analyse le message et identifie émotions/thèmes"    │
+│  ↓                                                              │
+│  Output: AnalysisResult {                                      │
+│    emotions: ['solitude'],                                     │
+│    themes: ['présence de Dieu', 'guidance'],                   │
+│    keywords: ['seul', 'perdu'],                                │
+│    summary: "L'utilisateur exprime solitude..."               │
+│  }                                                              │
+└────────────────────┬────────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  ÉTAPE 4 : RECHERCHE DU VERSET (retriever.py)                 │
+│  ────────────────────────────────────────────────────────────  │
+│                                                                 │
+│  4.1. Construire la requête vectorielle                        │
+│       query_text = "Je me sens seul et perdu"                 │
+│                                                                 │
+│  4.2. RECHERCHE VECTORIELLE (Prioritaire)                     │
+│       ┌──────────────────────────────────────┐                │
+│       │ Générer embedding du texte           │                │
+│       │ sentence-transformers → [384 dims]   │                │
+│       └──────────────┬───────────────────────┘                │
+│                      │                                         │
+│                      ▼                                         │
+│       ┌──────────────────────────────────────┐                │
+│       │ Comparer avec embeddings pré-calculés│                │
+│       │ Similarité cosinus → TOP 20 versets  │                │
+│       └──────────────┬───────────────────────┘                │
+│                      │                                         │
+│                      ▼                                         │
+│       Résultats: [verset1 (score: 0.85),                     │
+│                   verset2 (score: 0.82), ...]                 │
+│                                                                 │
+│  4.3. Recherche émotions/thèmes (pour score hybride)          │
+│       - Chercher "solitude" dans collection "emotions"        │
+│       - Chercher "présence de Dieu" dans "themes"             │
+│       - Trouver versets liés via versets_emotions/themes      │
+│                                                                 │
+│  4.4. SCORE HYBRIDE                                            │
+│       Pour chaque verset trouvé :                              │
+│       Score final = (score_vectoriel × 0.7)                   │
+│                 + (score_sémantique × 0.3)                    │
+│                                                                 │
+│       score_sémantique =                                       │
+│         (correspondance_émotions_thèmes × 0.6)                │
+│         + (correspondance_mots_clés × 0.4)                    │
+│                                                                 │
+│  4.5. Sélectionner le meilleur verset                         │
+│       → Verset avec le score combiné le plus élevé            │
+│       Exemple: Jérémie 29:11                                   │
+│                                                                 │
+│  4.6. Fallback (si recherche vectorielle échoue)              │
+│       - Recherche regex dans contenu                           │
+│       - Recherche par mots-clés                                │
+│       - Verset aléatoire (dernier recours)                     │
+└────────────────────┬────────────────────────────────────────────┘
+                     │
+                     ▼ VerseDocument
+┌─────────────────────────────────────────────────────────────────┐
+│  ÉTAPE 5 : GÉNÉRATION CONTENU SPIRITUEL (chains.py)           │
+│  ────────────────────────────────────────────────────────────  │
+│  🤖 Génération avec Groq (llama-3.1-8b-instant)               │
+│                                                                 │
+│  Input au LLM:                                                 │
+│  {                                                              │
+│    "verse_text": "Car je connais les projets...",             │
+│    "verse_reference": "Jérémie 29:11",                        │
+│    "user_message": "Je me sens seul et perdu",                │
+│    "emotions": "solitude",                                     │
+│    "themes": "présence de Dieu, guidance",                    │
+│    "keywords": "seul, perdu",                                 │
+│    "language": "fr"                                            │
+│  }                                                              │
+│                                                                 │
+│  Prompt: "Tu es un pasteur. Génère :                          │
+│           1. EXPLICATION du verset                            │
+│           2. MÉDITATION personnelle                            │
+│           3. PRIÈRE suggérée"                                 │
+│                                                                 │
+│  ↓                                                              │
+│                                                                 │
+│  Output: SpiritualContent {                                    │
+│    explanation: "Ce verset nous rappelle que Dieu...",       │
+│    meditation: "Prends un moment pour méditer...",            │
+│    prayer: "Seigneur, merci pour ta parole..."                 │
+│  }                                                              │
+└────────────────────┬────────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  ÉTAPE 6 : CONSTRUCTION RÉPONSE (__init__.py)                  │
+│  ────────────────────────────────────────────────────────────  │
+│  VerseResponse {                                                │
+│    text: "Car je connais les projets...",                     │
+│    reference: "Jérémie 29:11",                                │
+│    explanation: "...",                                         │
+│    meditation: "...",                                         │
+│    prayer: "...",                                              │
+│    keywords: ["seul", "perdu"],                               │
+│    metadata: {                                                 │
+│      translation: "lsg",                                      │
+│      book: "Jérémie",                                         │
+│      chapter: 29,                                             │
+│      verse: 11                                                │
+│    }                                                            │
+│  }                                                              │
+└────────────────────┬────────────────────────────────────────────┘
+                     │
+                     ▼ HTTP 200 OK
+┌─────────────────────────────────────────────────────────────────┐
+│  ÉTAPE 7 : AFFICHAGE (Frontend Flutter)                        │
+│  ────────────────────────────────────────────────────────────  │
+│  L'utilisateur voit :                                          │
+│  ┌─────────────────────────────────────────┐                 │
+│  │ 📖 Jérémie 29:11                        │                 │
+│  │                                          │                 │
+│  │ "Car je connais les projets que j'ai    │                 │
+│  │  formés sur vous, dit l'Éternel..."     │                 │
+│  │                                          │                 │
+│  │ 💡 EXPLICATION                           │                 │
+│  │ Ce verset nous rappelle que Dieu...     │                 │
+│  │                                          │                 │
+│  │ 🧘 MÉDITATION                            │                 │
+│  │ Prends un moment pour méditer...        │                 │
+│  │                                          │                 │
+│  │ 🙏 PRIÈRE                                │                 │
+│  │ Seigneur, merci pour ta parole...       │                 │
+│  └─────────────────────────────────────────┘                 │
+└─────────────────────────────────────────────────────────────────┘
