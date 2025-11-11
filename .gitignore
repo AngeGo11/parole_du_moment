@@ -54,3 +54,18 @@ backend/service-account-key.json
 .env
 .env.local
 .env.*.local
+
+# === MONGODB EXPORTS & BACKUPS ===
+dataset/mongodb_export/
+**/mongodb_backup/
+*.bson
+*.bson.gz
+
+# === LARGE BIBLE FILES (to avoid Git memory issues) ===
+# Les fichiers bibliques peuvent être régénérés depuis les sources
+# Si vous avez besoin de les garder dans Git, utilisez Git LFS
+dataset/bible/xml/*.xml
+dataset/bible/json/*.json
+!dataset/bible/json/index.json
+!dataset/bible/LICENSE
+!dataset/bible/README.md
