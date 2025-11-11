@@ -50,7 +50,17 @@ def load_assistant_prompt() -> str:
 - Être courtes, simples et claires.
 - Inclure au moins un verset biblique adapté (exemple : *Psaume 34:18*).
 - Ne jamais juger, ni imposer une croyance : tu accompagnes avec bienveillance.
-- Si la demande ne concerne pas la foi, tu peux répondre poliment que ton rôle est spirituel et orienté vers la Parole."""
+- Si la demande ne concerne pas la foi, tu peux répondre poliment que ton rôle est spirituel et orienté vers la Parole.
+
+🧘 MÉDITATION SUR UN VERSET :
+Quand l'utilisateur te demande de méditer ensemble sur un verset spécifique (par exemple : "Méditons ensemble sur ce verset: [verset]"), tu dois :
+1. Reconnaître le verset mentionné et sa référence biblique
+2. Fournir une méditation spirituelle approfondie sur ce verset
+3. Expliquer le contexte et le sens du verset
+4. Relier ce verset à la vie quotidienne et aux défis spirituels
+5. Offrir des pistes de réflexion et d'application pratique
+6. Inclure une prière ou une pensée de méditation si approprié
+NE demande PAS plus de précisions, mais engage-toi directement dans la méditation sur le verset fourni."""
 
 
 class AssistantChains:
@@ -67,9 +77,11 @@ class AssistantChains:
         try:
             # Ollama expose une API compatible OpenAI
             # Pas besoin d'API key pour Ollama local
+            # On passe une clé factice pour contourner la validation de LangChain
             self._llm = ChatOpenAI(
                 model=model_name,
                 base_url=ollama_url,
+                api_key="ollama",  # Clé factice pour Ollama (non utilisée)
                 temperature=0.7,  # Température modérée pour équilibrer créativité et cohérence
                 timeout=60.0,  # Timeout plus long pour les modèles locaux
             )
@@ -113,6 +125,12 @@ class AssistantChains:
             Réponse de l'assistant
         """
         try:
+            # Détecter si c'est une demande de méditation sur un verset
+            is_meditation_request = self._is_meditation_request(user_message)
+            verse_info = None
+            if is_meditation_request:
+                verse_info = self._extract_verse_from_user_message(user_message)
+            
             # Formater l'historique pour le prompt
             history_text = ""
             if conversation_history:
@@ -127,12 +145,38 @@ class AssistantChains:
                 history_text = "\n".join(history_messages)
 
             logger.info(f"📝 Génération de réponse pour: {user_message[:50]}...")
+            if is_meditation_request and verse_info:
+                logger.info(f"🧘 Demande de méditation détectée sur: {verse_info['reference']}")
 
-            # Créer le prompt avec l'historique et invoquer le LLM
-            messages = self._conversation_prompt.format_messages(
-                history=history_text if history_text else "Aucun historique.",
-                user_message=user_message,
-            )
+            # Charger le prompt de l'assistant pour l'utiliser dans le template
+            assistant_prompt_text = load_assistant_prompt()
+
+            # Construire le message système avec contexte supplémentaire si méditation
+            if is_meditation_request and verse_info:
+                # Créer un prompt spécialisé pour la méditation
+                meditation_prompt = ChatPromptTemplate.from_messages(
+                    [
+                        ("system", assistant_prompt_text),
+                        (
+                            "system",
+                            f"""L'utilisateur demande de méditer ensemble sur le verset suivant :
+Verset : "{verse_info['text']}"
+Référence : {verse_info['reference']}
+
+Engage-toi directement dans une méditation spirituelle approfondie sur ce verset. Explique son contexte, son sens, et comment l'appliquer dans la vie quotidienne. Ne demande pas plus de précisions.
+
+Historique de la conversation (pour contexte) :\n{history_text if history_text else "Aucun historique."}""",
+                        ),
+                        ("user", "{user_message}"),
+                    ]
+                )
+                messages = meditation_prompt.format_messages(user_message=user_message)
+            else:
+                # Créer le prompt avec l'historique et invoquer le LLM
+                messages = self._conversation_prompt.format_messages(
+                    history=history_text if history_text else "Aucun historique.",
+                    user_message=user_message,
+                )
 
             # Générer la réponse
             response = await self._llm.ainvoke(messages)
@@ -149,6 +193,97 @@ class AssistantChains:
         except Exception as e:
             logger.exception(f"❌ Erreur lors de la génération de réponse: {e}")
             raise
+
+    def _is_meditation_request(self, user_message: str) -> bool:
+        """Détecte si le message est une demande de méditation sur un verset."""
+        lower_message = user_message.lower()
+        meditation_keywords = [
+            "méditons ensemble",
+            "méditons sur",
+            "méditer sur",
+            "méditation sur",
+            "méditons ce verset",
+            "méditer ce verset",
+        ]
+        return any(keyword in lower_message for keyword in meditation_keywords)
+
+    def _extract_verse_from_user_message(self, user_message: str) -> Optional[dict]:
+        """
+        Extrait le verset et sa référence du message utilisateur.
+        
+        Returns:
+            Dict avec 'text' et 'reference' si trouvé, None sinon
+        """
+        import re
+        
+        # Pattern pour détecter les références bibliques (ex: job.9.28.LSG, Job 9:28, etc.)
+        # Format 1: livre.chapitre.verset.traduction (ex: job.9.28.LSG)
+        pattern1 = r'([a-z]+)\.(\d+)\.(\d+)\.([A-Z]+)'
+        match1 = re.search(pattern1, user_message, re.IGNORECASE)
+        
+        if match1:
+            book_abbr = match1.group(1).lower()
+            chapter = match1.group(2)
+            verse = match1.group(3)
+            translation = match1.group(4)
+            
+            # Mapper les abréviations de livres
+            book_map = {
+                'job': 'Job', 'gn': 'Genèse', 'ex': 'Exode', 'lv': 'Lévitique',
+                'nb': 'Nombres', 'dt': 'Deutéronome', 'js': 'Josué', 'jg': 'Juges',
+                'rt': 'Ruth', '1s': '1 Samuel', '2s': '2 Samuel', '1r': '1 Rois',
+                '2r': '2 Rois', '1ch': '1 Chroniques', '2ch': '2 Chroniques',
+                'esd': 'Esdras', 'ne': 'Néhémie', 'est': 'Esther', 'ps': 'Psaumes',
+                'pr': 'Proverbes', 'ec': 'Ecclésiaste', 'ct': 'Cantique des Cantiques',
+                'es': 'Ésaïe', 'jer': 'Jérémie', 'la': 'Lamentations', 'ez': 'Ézéchiel',
+                'da': 'Daniel', 'os': 'Osée', 'jl': 'Joël', 'am': 'Amos',
+                'ab': 'Abdias', 'jon': 'Jonas', 'mi': 'Michée', 'na': 'Nahum',
+                'hab': 'Habacuc', 'so': 'Sophonie', 'ag': 'Aggée', 'za': 'Zacharie',
+                'mal': 'Malachie', 'mt': 'Matthieu', 'mr': 'Marc', 'lu': 'Luc',
+                'jn': 'Jean', 'ac': 'Actes', 'ro': 'Romains', '1co': '1 Corinthiens',
+                '2co': '2 Corinthiens', 'ga': 'Galates', 'ep': 'Éphésiens',
+                'ph': 'Philippiens', 'col': 'Colossiens', '1th': '1 Thessaloniciens',
+                '2th': '2 Thessaloniciens', '1ti': '1 Timothée', '2ti': '2 Timothée',
+                'tit': 'Tite', 'phm': 'Philémon', 'he': 'Hébreux', 'ja': 'Jacques',
+                '1pi': '1 Pierre', '2pi': '2 Pierre', '1jn': '1 Jean', '2jn': '2 Jean',
+                '3jn': '3 Jean', 'jud': 'Jude', 'ap': 'Apocalypse'
+            }
+            
+            book_name = book_map.get(book_abbr, book_abbr.capitalize())
+            reference = f"{book_name} {chapter}:{verse}"
+            
+            # Extraire le texte du verset (entre guillemets ou après "verset:")
+            verse_text_match = re.search(r'verset[:\s]+["\'](.+?)["\']', user_message, re.IGNORECASE)
+            if not verse_text_match:
+                verse_text_match = re.search(r'["\'](.+?)["\']', user_message)
+            
+            verse_text = verse_text_match.group(1) if verse_text_match else reference
+            
+            return {
+                'text': verse_text.strip(),
+                'reference': reference
+            }
+        
+        # Format 2: Livre Chapitre:verset (ex: Job 9:28)
+        pattern2 = r'([A-Za-zÀ-ÿ\s]+)\s+(\d+):(\d+)'
+        match2 = re.search(pattern2, user_message)
+        
+        if match2:
+            book = match2.group(1).strip()
+            chapter = match2.group(2)
+            verse = match2.group(3)
+            reference = f"{book} {chapter}:{verse}"
+            
+            # Extraire le texte du verset
+            verse_text_match = re.search(r'["\'](.+?)["\']', user_message)
+            verse_text = verse_text_match.group(1) if verse_text_match else reference
+            
+            return {
+                'text': verse_text.strip(),
+                'reference': reference
+            }
+        
+        return None
 
     def extract_verse_from_response(self, response: str) -> Optional[VerseReference]:
         """

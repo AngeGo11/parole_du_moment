@@ -103,6 +103,65 @@ class VerseResponse {
   );
 }
 
+/// Modèle pour la requête à l'assistant
+class AssistantRequest {
+  final String userId;
+  final String message;
+  final String? conversationId;
+  final String language;
+
+  AssistantRequest({
+    required this.userId,
+    required this.message,
+    this.conversationId,
+    this.language = 'fr',
+  });
+
+  Map<String, dynamic> toJson() => {
+    'user_id': userId,
+    'message': message,
+    if (conversationId != null) 'conversation_id': conversationId,
+    'language': language,
+  };
+}
+
+/// Modèle pour le verset dans la réponse de l'assistant
+class AssistantVerse {
+  final String text;
+  final String reference;
+
+  AssistantVerse({required this.text, required this.reference});
+
+  factory AssistantVerse.fromJson(Map<String, dynamic> json) => AssistantVerse(
+    text: json['text'] as String,
+    reference: json['reference'] as String,
+  );
+}
+
+/// Modèle pour la réponse de l'assistant
+class AssistantResponse {
+  final String response;
+  final AssistantVerse? verse;
+  final String conversationId;
+  final List<String> keywords;
+
+  AssistantResponse({
+    required this.response,
+    this.verse,
+    required this.conversationId,
+    required this.keywords,
+  });
+
+  factory AssistantResponse.fromJson(Map<String, dynamic> json) => AssistantResponse(
+    response: json['response'] as String,
+    verse: json['verse'] != null
+        ? AssistantVerse.fromJson(json['verse'] as Map<String, dynamic>)
+        : null,
+    conversationId: json['conversation_id'] as String,
+    keywords: List<String>.from(json['keywords'] ?? []),
+  );
+}
+
 /// Service API pour communiquer avec le backend
 class ApiService {
   ApiService._();
@@ -224,6 +283,52 @@ class ApiService {
 
       throw ApiException(
         message: 'Erreur inconnue: ${e.toString()}',
+        statusCode: 0,
+      );
+    }
+  }
+
+  /// Envoie un message à l'assistant spirituel
+  Future<AssistantResponse> chatWithAssistant(AssistantRequest request) async {
+    try {
+      final uri = Uri.parse('${ApiConfig.baseUrl}/api/assistant/chat');
+
+      final response = await http
+          .post(
+            uri,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(request.toJson()),
+          )
+          .timeout(ApiConfig.requestTimeout);
+
+      if (response.statusCode == 200) {
+        final jsonData =
+            jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+        return AssistantResponse.fromJson(jsonData);
+      } else {
+        final errorData =
+            jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+        throw ApiException(
+          message: errorData['detail'] as String? ?? 'Erreur lors de la communication avec l\'assistant',
+          statusCode: response.statusCode,
+        );
+      }
+    } on TimeoutException {
+      throw ApiException(
+        message:
+            'La requête a pris trop de temps.\n\n'
+            'Vérifiez que:\n'
+            '• Le backend est démarré\n'
+            '• Ollama est démarré avec le modèle Mistral 7B\n'
+            '• Votre connexion fonctionne',
+        statusCode: 0,
+      );
+    } catch (e) {
+      if (e is ApiException) {
+        rethrow;
+      }
+      throw ApiException(
+        message: 'Erreur lors de la communication avec l\'assistant: ${e.toString()}',
         statusCode: 0,
       );
     }

@@ -39,8 +39,13 @@ class Verse {
 
 class HomePage extends StatefulWidget {
   final Function(Verse, bool) onAddToHistory;
+  final Function(String)? onNavigateToAssistant; // Callback pour naviguer vers l'assistant avec un message
 
-  const HomePage({Key? key, required this.onAddToHistory}) : super(key: key);
+  const HomePage({
+    Key? key,
+    required this.onAddToHistory,
+    this.onNavigateToAssistant,
+  }) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -252,6 +257,13 @@ class _HomePageState extends State<HomePage>
           ),
         );
       }
+    }
+  }
+
+  void _handleMeditateWithAssistant() {
+    if (_currentVerse != null && widget.onNavigateToAssistant != null) {
+      final message = 'Méditons ensemble sur ce verset: "${_currentVerse!.text}" — ${_currentVerse!.reference}';
+      widget.onNavigateToAssistant!(message);
     }
   }
 
@@ -584,8 +596,10 @@ class _HomePageState extends State<HomePage>
                   ),
                   const SizedBox(height: 16),
                   // Actions
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  Wrap(
+                    alignment: WrapAlignment.spaceAround,
+                    spacing: 8,
+                    runSpacing: 8,
                     children: [
                       _buildActionButton(
                         icon: Icons.volume_up,
@@ -609,6 +623,11 @@ class _HomePageState extends State<HomePage>
                         icon: Icons.bookmark_add,
                         label: 'Sauver',
                         onTap: () {},
+                      ),
+                      _buildActionButton(
+                        icon: Icons.auto_awesome,
+                        label: 'Méditer',
+                        onTap: _handleMeditateWithAssistant,
                       ),
                     ],
                   ),

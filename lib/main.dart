@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'services/firebase_auth_service.dart';
+import 'providers/theme_provider.dart';
 import 'screens/Welcome.dart';
 import 'screens/SignIn.dart';
 import 'screens/SignUp.dart';
@@ -32,23 +34,72 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Parole du moment',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF8D6E63)),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) {
+          return MaterialApp(
+            title: 'Parole du moment',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFF8D6E63),
+                brightness: Brightness.light,
+              ),
+              useMaterial3: true,
+            ),
+            darkTheme: ThemeData(
+              colorScheme: ColorScheme.dark(
+                primary: const Color(0xFF8D6E63),
+                secondary: const Color(0xFF6D4C41),
+                surface: const Color(0xFF2D2D2D),
+                background: const Color(0xFF1E1E1E),
+                onPrimary: Colors.white,
+                onSecondary: Colors.white,
+                onSurface: const Color(0xFFEFEFEF),
+                onBackground: const Color(0xFFEFEFEF),
+                error: Colors.red,
+                onError: Colors.white,
+                brightness: Brightness.dark,
+              ),
+              scaffoldBackgroundColor: const Color(0xFF1E1E1E),
+              cardColor: const Color(0xFF2D2D2D),
+              dividerColor: const Color(0xFF3C2F2F),
+              textTheme: const TextTheme(
+                displayLarge: TextStyle(color: Color(0xFFEFEFEF)),
+                displayMedium: TextStyle(color: Color(0xFFEFEFEF)),
+                displaySmall: TextStyle(color: Color(0xFFEFEFEF)),
+                headlineLarge: TextStyle(color: Color(0xFFD4AF37)),
+                headlineMedium: TextStyle(color: Color(0xFFD4AF37)),
+                headlineSmall: TextStyle(color: Color(0xFFD4AF37)),
+                titleLarge: TextStyle(color: Color(0xFFEFEFEF)),
+                titleMedium: TextStyle(color: Color(0xFFEFEFEF)),
+                titleSmall: TextStyle(color: Color(0xFFEFEFEF)),
+                bodyLarge: TextStyle(color: Color(0xFFEFEFEF)),
+                bodyMedium: TextStyle(color: Color(0xFFEFEFEF)),
+                bodySmall: TextStyle(color: Color(0xFFBCAAA4)),
+                labelLarge: TextStyle(color: Color(0xFFEFEFEF)),
+                labelMedium: TextStyle(color: Color(0xFFBCAAA4)),
+                labelSmall: TextStyle(color: Color(0xFFBCAAA4)),
+              ),
+              useMaterial3: true,
+            ),
+            themeMode: themeProvider.isDarkMode 
+                ? ThemeMode.dark 
+                : ThemeMode.light,
+            // Point d'entrée avec contrôle d'authentification
+            home: const AuthWrapper(),
+            routes: {
+              '/welcome': (context) => const WelcomePage(),
+              '/signin': (context) => const SigninPage(),
+              '/signup': (context) => const SignupPage(),
+              '/home': (context) => const Scaffold(
+                body: HomePage(onAddToHistory: _dummyHistoryCallback),
+              ),
+            },
+          );
+        },
       ),
-      // Point d'entrée avec contrôle d'authentification
-      home: const AuthWrapper(),
-      routes: {
-        '/welcome': (context) => const WelcomePage(),
-        '/signin': (context) => const SigninPage(),
-        '/signup': (context) => const SignupPage(),
-        '/home': (context) => const Scaffold(
-          body: HomePage(onAddToHistory: _dummyHistoryCallback),
-        ),
-      },
     );
   }
 
@@ -106,31 +157,49 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
+  String? _assistantInitialMessage; // Message initial pour l'assistant
+  int _assistantKeyCounter = 0; // Compteur pour forcer la recréation de AssistantPage
 
-  late final List<Widget> _pages;
+  List<Widget> get _pages => [
+        HomePage(
+          onAddToHistory: _dummyHomeHistoryCallback,
+          onNavigateToAssistant: _navigateToAssistantWithMessage,
+        ),
+        const DailyVersePage(),
+        AssistantPage(
+          key: ValueKey('assistant_$_assistantKeyCounter'),
+          initialUserMessage: _assistantInitialMessage,
+        ),
+        const CommunityPage(),
+        const ProfilePage(),
+      ];
 
-  @override
-  void initState() {
-    super.initState();
-    _pages = [
-      HomePage(onAddToHistory: _dummyHomeHistoryCallback),
-      const DailyVersePage(),
-      const AssistantPage(),
-      const CommunityPage(),
-      const ProfilePage(),
-    ];
+  void _navigateToAssistantWithMessage(String message) {
+    setState(() {
+      _assistantInitialMessage = message;
+      _assistantKeyCounter++; // Incrémenter pour forcer la recréation
+      _selectedIndex = 2; // Index de l'Assistant
+    });
   }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      // Réinitialiser le message initial si on quitte la page Assistant
+      // pour permettre d'envoyer un nouveau message lors de la prochaine navigation
+      if (index != 2) {
+        _assistantInitialMessage = null;
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,

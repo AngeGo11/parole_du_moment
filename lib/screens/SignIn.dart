@@ -73,6 +73,7 @@ class _SigninPageState extends State<SigninPage>
           ),
         );
         // Navigation automatique vers Home via AuthWrapper
+        Navigator.of(context).pop();
       }
     } catch (e) {
       setState(() => _isLoading = false);

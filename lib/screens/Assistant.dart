@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../services/api_service.dart';
 
 class Message {
   final String id;
@@ -37,7 +40,10 @@ class AIResponse {
 }
 
 class AssistantPage extends StatefulWidget {
-  const AssistantPage({Key? key}) : super(key: key);
+  final String?
+  initialUserMessage; // Message initial optionnel de l'utilisateur
+
+  const AssistantPage({Key? key, this.initialUserMessage}) : super(key: key);
 
   @override
   State<AssistantPage> createState() => _AssistantPageState();
@@ -50,6 +56,14 @@ class _AssistantPageState extends State<AssistantPage>
   final List<Message> _messages = [];
   bool _isTyping = false;
   String? _copiedId;
+  String _displayedText = ''; // Texte affiché progressivement pour l'animation
+  Timer? _typingTimer;
+  bool _isTypingAnimation =
+      false; // Indique si l'animation de frappe est en cours
+  int _typingIndex = 0; // Index actuel pour l'animation de frappe
+  String? _animatedMessageId; // ID du message en cours d'animation
+  String? _conversationId; // ID de conversation pour maintenir le contexte
+  final ApiService _apiService = ApiService.instance;
 
   late AnimationController _typingAnimationController;
 
@@ -154,19 +168,71 @@ class _AssistantPageState extends State<AssistantPage>
       vsync: this,
     )..repeat();
 
-    _messages.add(
-      Message(
-        id: '1',
-        role: 'assistant',
-        content:
-            "Bonjour ! 🙏 Je suis Shalom🌿, votre assistant spirituel guidé par la Parole de Dieu. Je suis là pour vous accompagner dans votre marche spirituelle, répondre à vos questions, méditer avec vous et vous encourager avec les Écritures. Comment puis-je vous aider aujourd'hui ?",
-        timestamp: DateTime.now(),
-      ),
+    final initialMessage = Message(
+      id: '1',
+      role: 'assistant',
+      content:
+          "Bonjour ! 🙏 Je suis Shalom🌿, votre assistant spirituel guidé par la Parole de Dieu. Je suis là pour vous accompagner dans votre marche spirituelle, répondre à vos questions, méditer avec vous et vous encourager avec les Écritures. Comment puis-je vous aider aujourd'hui ?",
+      timestamp: DateTime.now(),
     );
+
+    _messages.add(initialMessage);
+
+    // Démarrer l'animation de frappe pour le message initial
+    _startTypingAnimation(initialMessage.content, initialMessage.id);
+
+    // Ajouter un listener pour mettre à jour l'état quand l'utilisateur tape
+    _inputController.addListener(() {
+      setState(
+        () {},
+      ); // Force la reconstruction du widget pour mettre à jour le bouton
+    });
+
+    // Si un message initial est fourni, l'envoyer automatiquement après l'animation
+    if (widget.initialUserMessage != null &&
+        widget.initialUserMessage!.isNotEmpty) {
+      // Attendre que l'animation du message initial soit terminée
+      // Le message initial fait environ 200 caractères, avec 30ms par caractère = ~6 secondes
+      // Ajoutons un délai supplémentaire pour être sûr
+      final animationDuration = (initialMessage.content.length * 30) + 1000;
+      Future.delayed(Duration(milliseconds: animationDuration), () {
+        if (mounted && widget.initialUserMessage != null) {
+          _inputController.text = widget.initialUserMessage!;
+          _handleSend();
+        }
+      });
+    }
+  }
+
+  void _startTypingAnimation(String fullText, String messageId) {
+    // Annuler l'animation précédente si elle existe
+    _typingTimer?.cancel();
+
+    _isTypingAnimation = true;
+    _displayedText = '';
+    _typingIndex = 0;
+    _animatedMessageId = messageId;
+
+    _typingTimer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
+      if (_typingIndex < fullText.length) {
+        setState(() {
+          _displayedText = fullText.substring(0, _typingIndex + 1);
+          _typingIndex++;
+        });
+        // Faire défiler automatiquement pendant l'animation
+        _scrollToBottom();
+      } else {
+        timer.cancel();
+        _isTypingAnimation = false;
+        _animatedMessageId = null;
+        _typingTimer = null;
+      }
+    });
   }
 
   @override
   void dispose() {
+    _typingTimer?.cancel();
     _typingAnimationController.dispose();
     _inputController.dispose();
     _scrollController.dispose();
@@ -174,6 +240,7 @@ class _AssistantPageState extends State<AssistantPage>
   }
 
   Message _getAIResponse(String userMessage) {
+    // Cette fonction est maintenant utilisée comme fallback uniquement
     final lowerMessage = userMessage.toLowerCase();
 
     for (final response in _aiResponses) {
@@ -192,9 +259,50 @@ class _AssistantPageState extends State<AssistantPage>
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       role: 'assistant',
       content:
-          "Je comprends votre préoccupation. La Bible contient de nombreuses sagesses pour guider nos vies. Pourriez-vous préciser davantage votre situation ou votre question spirituelle ?",
+          "Je comprends votre préoccupation. La Bible contient de nombreuses passages pour guider nos vies. Pourriez-vous préciser davantage votre situation ou votre question spirituelle ?",
       timestamp: DateTime.now(),
     );
+  }
+
+  Future<Message> _getAIResponseFromAPI(String userMessage) async {
+    try {
+      // Obtenir l'ID utilisateur Firebase
+      final userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
+
+      // Appeler l'API backend avec Ollama
+      final request = AssistantRequest(
+        userId: userId,
+        message: userMessage,
+        conversationId: _conversationId,
+        language: 'fr',
+      );
+
+      final response = await _apiService.chatWithAssistant(request);
+
+      // Sauvegarder le conversationId pour maintenir le contexte
+      _conversationId = response.conversationId;
+
+      // Convertir la réponse en Message
+      Verse? verse;
+      if (response.verse != null) {
+        verse = Verse(
+          text: response.verse!.text,
+          reference: response.verse!.reference,
+        );
+      }
+
+      return Message(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        role: 'assistant',
+        content: response.response,
+        verse: verse,
+        timestamp: DateTime.now(),
+      );
+    } catch (e) {
+      // En cas d'erreur, utiliser le fallback avec les réponses pré-définies
+      print('⚠️ Erreur API Assistant: $e');
+      return _getAIResponse(userMessage);
+    }
   }
 
   Future<void> _handleSend() async {
@@ -215,9 +323,9 @@ class _AssistantPageState extends State<AssistantPage>
     _inputController.clear();
     _scrollToBottom();
 
-    await Future.delayed(const Duration(milliseconds: 1500));
+    // Appeler l'API backend avec Ollama (avec fallback si erreur)
+    final aiMessage = await _getAIResponseFromAPI(userMessage.content);
 
-    final aiMessage = _getAIResponse(userMessage.content);
     setState(() {
       _messages.add(aiMessage);
       _isTyping = false;
@@ -255,17 +363,24 @@ class _AssistantPageState extends State<AssistantPage>
   }
 
   void _handleNewConversation() {
+    // Annuler l'animation en cours si elle existe
+    _typingTimer?.cancel();
+    _isTypingAnimation = false;
+    _animatedMessageId = null;
+    _conversationId = null; // Réinitialiser la conversation
+
     setState(() {
       _messages.clear();
-      _messages.add(
-        Message(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          role: 'assistant',
-          content:
-              "Nouvelle conversation démarrée. Comment puis-je vous accompagner dans votre parcours spirituel aujourd'hui ?",
-          timestamp: DateTime.now(),
-        ),
+      final newMessage = Message(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        role: 'assistant',
+        content:
+            "Nouvelle conversation démarrée. Comment puis-je vous accompagner dans votre parcours spirituel aujourd'hui ?",
+        timestamp: DateTime.now(),
       );
+      _messages.add(newMessage);
+      // Démarrer l'animation pour le nouveau message
+      _startTypingAnimation(newMessage.content, newMessage.id);
     });
   }
 
@@ -443,6 +558,12 @@ class _AssistantPageState extends State<AssistantPage>
   }
 
   Widget _buildMessageBubble(Message message, bool isUser) {
+    // Utiliser le texte progressif pour le message en cours d'animation
+    final displayText =
+        (!isUser && _isTypingAnimation && _animatedMessageId == message.id)
+        ? _displayedText
+        : message.content;
+
     return Stack(
       children: [
         Container(
@@ -467,7 +588,7 @@ class _AssistantPageState extends State<AssistantPage>
             ],
           ),
           child: Text(
-            message.content,
+            displayText,
             style: TextStyle(
               fontSize: 14,
               height: 1.5,
@@ -748,7 +869,7 @@ class _AssistantPageState extends State<AssistantPage>
               borderRadius: BorderRadius.circular(12),
             ),
             child: IconButton(
-              onPressed: _inputController.text.trim().isEmpty || _isTyping
+              onPressed: (_inputController.text.trim().isEmpty || _isTyping)
                   ? null
                   : _handleSend,
               icon: const Icon(Icons.send, color: Colors.white, size: 20),
